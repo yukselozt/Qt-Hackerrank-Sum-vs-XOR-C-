@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include<QTcpSocket>
+#include<QFile>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,14 +21,17 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+
 private slots:
     void on_httpButton_clicked();
     void requestFinished(QNetworkReply*);
     void on_tcpButton_clicked();
+    void read_config();
 
 private:
     Ui::MainWindow *ui;
-    QString http_url = "http://localhost:1880/http";
+    QString http_url;
+    QString tcp_port;
     QTcpSocket *socket;
 };
 #endif // MAINWINDOW_H
