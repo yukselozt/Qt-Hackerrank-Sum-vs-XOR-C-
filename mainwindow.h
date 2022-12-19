@@ -8,9 +8,15 @@
 #include <QJsonObject>
 #include<QTcpSocket>
 #include<QFile>
+#include <config.h>
+#include<QSettings>
+#include<QWebSocket>
+#include<QWebSocketServer>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
+class WebServer;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -20,18 +26,16 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+    void configReader();
 
 
 private slots:
     void on_httpButton_clicked();
     void requestFinished(QNetworkReply*);
     void on_tcpButton_clicked();
-    void read_config();
 
 private:
     Ui::MainWindow *ui;
-    QString http_url;
-    QString tcp_port;
     QTcpSocket *socket;
 };
 #endif // MAINWINDOW_H

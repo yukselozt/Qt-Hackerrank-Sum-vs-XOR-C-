@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <typeinfo>
+#include<QSettings>
+#include<webserver.h>
 
 //MAIN (SUM vs XOR) PROBLEM
 QString SumXor (int x){
@@ -20,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    read_config();
+    configReader();
 }
 
 
@@ -30,32 +32,31 @@ MainWindow::~MainWindow()
 }
 
 
+////WEBSOCKET CONNECTION
+//void MainWindow::getMessage(const QString &message){
+//    qDebug()<<message;
+//    ui->wsLabel->setText(message);
+//}
+
+
 //CONFIG READER
-void MainWindow::read_config()
-{
-    //FINDING THE TEXT FILE
-    QFile file("./urls.txt");
-    if(!file.exists()){
-        qDebug() << "File Not Found";
-    }else if(!file.open(QIODevice::ReadOnly)){
-        qDebug() << "CANNOT OPEN";
-    }else{
-        //CREATING A STREAM FOR READING TXT FILE
-        QTextStream stream(&file);
-        //READ ONE LINE
-        QString data = stream.readLine();
-        //SPLITTING DATA
-        QStringList list =data.split('=');
-        //ASSING VALUE
-        http_url=list[1];
-        while (!stream.atEnd()){
-            QString line = stream.readLine();
-            qDebug() <<line;
-            QStringList list2 =line.split('=');
-            tcp_port=list2[1];
-            tcp_port.toInt();
-        }
-    }
+void MainWindow::configReader(){
+    QString qstrConfigPath = QApplication::applicationDirPath();
+    qstrConfigPath.append("/Config/config.ini");
+    QSettings settings(qstrConfigPath,QSettings::IniFormat);
+    settings.setIniCodec("UTF-8");
+
+    settings.beginGroup("HTTP_VALUES");
+    QList<QString> keys_list;
+    //qDebug()<<keys_list;
+    config::HTTP_URL = settings.value("http_url").toString();
+    settings.endGroup();
+
+    settings.beginGroup("TCP_VALUES");
+    config::TCP_HOST= settings.value("host").toString();
+    config::TCP_PORT= settings.value("port").toInt();
+    settings.endGroup();
+
 }
 
 
@@ -65,7 +66,7 @@ void MainWindow::on_httpButton_clicked()
     qDebug()<<"Requested";
     QNetworkAccessManager *man = new QNetworkAccessManager(this);
     connect(man, &QNetworkAccessManager::finished, this, &MainWindow::requestFinished);
-    QUrl url = QUrl(http_url);
+    QUrl url = QUrl(config::HTTP_URL);
     man->get(QNetworkRequest(url));
 }
 //HTTP RESPONSE HANDLE
@@ -84,13 +85,13 @@ void MainWindow::requestFinished(QNetworkReply *reply) {
 void MainWindow::on_tcpButton_clicked()
 {
     socket = new QTcpSocket(this);
-    socket->connectToHost("localhost",tcp_port.toInt());
+    socket->connectToHost(config::TCP_HOST,config::TCP_PORT);
     if(socket->waitForConnected(3000)){
         qDebug() << "Connected";
     }else{
         qDebug() << "Not Connected!!";
     }
-    socket->write("hel");
+    socket->write("hello");
     socket->waitForBytesWritten(1000);
     socket->waitForReadyRead(3000);
     char c =socket->readAll().at(0);
@@ -98,5 +99,6 @@ void MainWindow::on_tcpButton_clicked()
     ui->tcpLabel->setText(SumXor(i));
     socket->close();
 }
+
 
 
