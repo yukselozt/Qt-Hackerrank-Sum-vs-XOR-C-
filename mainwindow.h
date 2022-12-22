@@ -10,13 +10,11 @@
 #include<QFile>
 #include <config.h>
 #include<QSettings>
-#include<QWebSocket>
-#include<QWebSocketServer>
-
+#include<QtWebSockets/QWebSocket>
+#include <QtCore/QObject>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
-class WebServer;
 QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
@@ -27,6 +25,12 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void configReader();
+    void ws_connection();
+    void onTextMessageReceived(const QString &message);
+    void onConnected();
+
+Q_SIGNALS:
+    void closed();
 
 
 private slots:
@@ -34,8 +38,11 @@ private slots:
     void requestFinished(QNetworkReply*);
     void on_tcpButton_clicked();
 
+
 private:
     Ui::MainWindow *ui;
     QTcpSocket *socket;
+    QWebSocket *webSocket;
+
 };
 #endif // MAINWINDOW_H

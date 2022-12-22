@@ -2,7 +2,6 @@
 #include "ui_mainwindow.h"
 #include <typeinfo>
 #include<QSettings>
-#include<webserver.h>
 
 //MAIN (SUM vs XOR) PROBLEM
 QString SumXor (int x){
@@ -23,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     configReader();
+    ws_connection();
 }
 
 
@@ -99,6 +99,34 @@ void MainWindow::on_tcpButton_clicked()
     ui->tcpLabel->setText(SumXor(i));
     socket->close();
 }
+
+
+//WS CONNECTION
+void MainWindow::ws_connection()
+{
+    webSocket = new QWebSocket();
+    connect(webSocket, &QWebSocket::connected, this, &MainWindow::onConnected);
+    connect(webSocket, &QWebSocket::disconnected, this, &MainWindow::closed);
+    webSocket -> open(QUrl("ws://localhost:1880/ws/publish"));
+}
+
+void MainWindow::onConnected()
+{
+
+        qDebug() << "WebSocket connected";
+    connect(webSocket, &QWebSocket::textMessageReceived,
+            this, &MainWindow::onTextMessageReceived);
+    webSocket->sendTextMessage(QStringLiteral("Hello, world!"));
+}
+
+void MainWindow::onTextMessageReceived(const QString &message)
+{
+
+        qDebug() << "Message received:" << message;
+    webSocket->close();
+}
+
+
 
 
 
