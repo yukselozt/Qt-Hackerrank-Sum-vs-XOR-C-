@@ -1,5 +1,10 @@
 QT       += core gui network websockets
 
+
+TRANSLATIONS = tr_TCMS68000_Turkish.ts\
+                               tr_TCMS68000_English.ts
+
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += console
@@ -20,6 +25,9 @@ HEADERS += \
 
 FORMS += \
     mainwindow.ui
+
+TRANSLATIONS +=    tr_TCMS68000_English.ts \
+                                     tr_TCMS68000_Turkish.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

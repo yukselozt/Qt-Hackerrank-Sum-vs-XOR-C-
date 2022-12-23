@@ -12,6 +12,7 @@
 #include<QSettings>
 #include<QtWebSockets/QWebSocket>
 #include <QtCore/QObject>
+#include <QTranslator>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -43,6 +44,7 @@ private:
     Ui::MainWindow *ui;
     QTcpSocket *socket;
     QWebSocket *webSocket;
+    QTranslator *translator;
 
 };
 #endif // MAINWINDOW_H

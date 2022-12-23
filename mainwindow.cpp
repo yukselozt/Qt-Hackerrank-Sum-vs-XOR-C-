@@ -119,11 +119,15 @@ void MainWindow::onConnected()
     webSocket->sendTextMessage(QStringLiteral("Hello, world!"));
 }
 
-void MainWindow::onTextMessageReceived(const QString &message)
+void MainWindow::onTextMessageReceived(const QString &messagetemp)
 {
-
-        qDebug() << "Message received:" << message;
-    webSocket->close();
+        qDebug() << "Message received:" <<  messagetemp;
+        QString temp1(messagetemp);
+        QJsonDocument tempjson = QJsonDocument::fromJson(temp1.toUtf8());
+        QJsonObject message_last = tempjson.object();
+        int message = message_last.value("data").toInt();
+        qDebug() << "Last Message is : " << SumXor(message);
+        webSocket->close();
 }
 
 
